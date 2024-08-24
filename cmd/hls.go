@@ -37,7 +37,7 @@ var hlsCmd = &cobra.Command{
 		fmt.Printf("Duration: %s seconds\n", durationFlag)
 		fmt.Printf("VLC Path: %s\n", vlcPathFlag)
 		firstTestStatus := CheckStatus(hlsUrlFlag)
-		fmt.Printf("HTTP HLS Test. Is it working? %t\n", CheckStatus(hlsUrlFlag))
+		fmt.Printf("HTTP HLS Test. Is it working? %t\n", firstTestStatus)
 		if firstTestStatus {
 			fmt.Printf("VLC HLS Test. Is it working? %t\n", CheckWithVLC(hlsUrlFlag, durationFlag, vlcPathFlag))
 		}

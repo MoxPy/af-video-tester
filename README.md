@@ -15,6 +15,11 @@ You can check an RTMP or HLS streaming source individually, or take advantage of
 ### RTMP Test
 
 This command tests a single RTMP stream.
+During the RTMP check, the tool performs the following actions:
+
+    IP Address Check: The RTMP check initially verifies the IP address and port of the RTMP server. For example, if you provide an RTMP URL like rtmp://1.1.1.1:1935/streampath, the tool will only check the IP address and port (1.1.1.1:1935).
+
+    Stream Path Verification: The specific stream path (streampath in this example) will be verified separately using VLC. This ensures that while the server connection is established, the actual streaming content is validated in a subsequent step.
 
 ```bash 
 afvt rtmp --url rtmp://example.com:1935/streaming
@@ -25,6 +30,11 @@ afvt rtmp --url rtmp://example.com:1935/streaming
 ### HLS Test
 
 This command tests a single HLS stream.
+During the HLS test, the tool follows these steps:
+
+    HTTP Request: The tool first uses the CheckStatus() function to send an HTTP request to the provided HLS URL. This function verifies if the HLS URL is accessible and responds correctly.
+
+    Stream Verification: If CheckStatus() returns a positive response, indicating that the URL is valid and accessible, the tool then proceeds to call CheckWithVLC(). This function uses VLC to further verify the streaming content and ensure that the HLS stream is working properly.
 
 ```bash 
 afvt hls --url https://example.com/stream.m3u8 --duration 20

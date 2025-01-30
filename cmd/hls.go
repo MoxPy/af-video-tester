@@ -34,13 +34,11 @@ var hlsCmd = &cobra.Command{
 			return
 		}
 		fmt.Printf("URL: %s\n", hlsUrlFlag)
-		fmt.Printf("Duration: %s seconds\n", durationFlag)
+		fmt.Printf("Duration: %d seconds\n", durationFlag)
 		fmt.Printf("VLC Path: %s\n", vlcPathFlag)
-		firstTestStatus := CheckStatus(hlsUrlFlag)
-		fmt.Printf("HTTP HLS Test. Is it working? %t\n", firstTestStatus)
-		if firstTestStatus {
-			fmt.Printf("VLC HLS Test. Is it working? %t\n", CheckWithVLC(hlsUrlFlag, durationFlag, vlcPathFlag))
-		}
+		serverStatus, vlcStatus := PerformCheck(hlsUrlFlag, durationFlag, vlcPathFlag)
+		fmt.Printf("Performing first HLS Test. Is it working? %t\n", serverStatus)
+		fmt.Printf("Performing second HLS Test. Is it working? %t\n", vlcStatus)
 	},
 }
 
@@ -50,6 +48,16 @@ func init() {
 	hlsCmd.Flags().StringVarP(&vlcPathFlag, "vlc", "v", "/Applications/VLC.app/Contents/MacOS/VLC", "Path to the VLC executable. For example: /Applications/VLC.app/Contents/MacOS/VLC is the default value, you can omit it if you are on MacOS.")
 
 	hlsCmd.MarkFlagRequired("url")
+}
+
+// PerformCheck Calls CheckStatus and CheckWithVLC to perform the test
+func PerformCheck(hlsUrlFlag string, durationFlag int, vlcPathFlag string) (bool, bool) {
+	serverStatus := CheckStatus(hlsUrlFlag)
+	if serverStatus {
+		vlcStatus := CheckWithVLC(hlsUrlFlag, durationFlag, vlcPathFlag)
+		return serverStatus, vlcStatus
+	}
+	return serverStatus, false
 }
 
 // CheckStatus verifies the status of an HLS stream by making an HTTP request to the provided HLS URL.
@@ -88,7 +96,7 @@ func CheckStatus(url string) bool {
 
 	playlistContent := string(body)
 
-	if strings.Contains(playlistContent, ".ts") {
+	if strings.Contains(playlistContent, ".ts") || strings.Contains(playlistContent, ".m3u8") {
 		log.Printf("HLS Streaming Status: up")
 		return true
 	}
@@ -138,7 +146,7 @@ func CheckWithVLC(url string, d int, VLCPath string) bool {
 		for errScanner.Scan() {
 			line := errScanner.Text()
 			log.Println("VLC Output (stderr): ", line)
-			if strings.Contains(line, "Changing stream format Unknown -> TS") {
+			if strings.Contains(line, "Changing stream format Unknown -> TS") || strings.Contains(line, "Changing stream format Unknown -> MP4") {
 				go func() {
 					select {
 					case <-time.After(duration + 5*time.Second):

@@ -58,7 +58,7 @@ afvt afvt long-rtmp --url rtmp://example.com:1935/streaming
 This command tests both RTMP and HLS stream. It takes advantage of Go's goroutines to open and test multiple streams concurrently.
 
 ```bash 
-afvt afvt long-rtmp --url rtmp://example.com:1935/streaming
+afvt afvt full-test --rtmpurl rtmp://localhost:1935/streaming --hlsurl http://localhost:8080/hls/streaming.m3u8
 ```
     --rtmpurl: URL of the RTMP stream to test.
     --hlsurl: URL of the HLS stream to test.

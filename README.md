@@ -2,9 +2,16 @@
 
 ## Features
 
-AFVT is a tool that uses a combination of networking techniques and VLC to check if a streaming source is functioning correctly. Also you can download videos with ffmpeg.
-You can check an RTMP or HLS streaming source individually, or take advantage of Go's goroutines to open and test multiple streams concurrently using VLC by invoking the full-test command.
-To download videos you need ffmpeg on your system.
+A powerful command-line toolkit written in Go for streaming professionals. Test, analyze, and download RTMP and HLS streams with ease.
+
+## ✨ Key Features
+
+- 🔍 **Stream Testing**: Comprehensive RTMP and HLS stream validation
+- ⚡ **Parallel Processing**: Concurrent stream testing and downloads using Go routines
+- 📊 **HLS Analysis**: Extract and analyze ABR variants from master playlists
+- 📥 **Batch Downloads**: Download multiple HLS streams simultaneously
+- 🎮 **VLC Integration**: Seamless integration with VLC for stream verification
+- 🔄 **Format Support**: Full RTMP and HLS protocol support
 
 ## Usage
 

@@ -1,4 +1,4 @@
-# AFVT - A command-line tool written in Go for testing RTMP and HLS streaming. You can also analyze and download HLS content.
+# AFVT - A command-line tool written in Go for streaming professionals.
 
 ## Features
 

@@ -75,9 +75,10 @@ This command extract ABR variants from HLS master playlist. Analyzes the provide
 afvt get-variants-hls --url https://example.com/stream.m3u8
 ```
 
-## Download a video from an HLS URL
+### Download a video from an HLS URL
 
 **Requires ffmpeg**
+
 Download HLS content using ffmpeg. Insert your url and the output file path and choose to open it at the end of the download or not.
 ```bash 
 afvt dw-hls --url http://example.com/playlist.m3u8 --output output.mp4 --open
@@ -86,9 +87,10 @@ afvt dw-hls --url http://example.com/playlist.m3u8 --output output.mp4 --open
     --output: Path to save the downloaded file
     --open: If you want to open the video after the download
 
-## Download multiple videos from a HLS URLs
+### Download multiple videos from a HLS URLs
 
 **Requires ffmpeg**
+
 Download multiple HLS content using ffmpeg in parallel. Insert your urls and output file paths.
 ```bash 
 afvt dw-multiple-hls --url "url1,url2,url3" --output "out1.mp4,out2.mp4,out3.mp4" --open

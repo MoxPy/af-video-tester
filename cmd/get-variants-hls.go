@@ -61,7 +61,7 @@ var getVariantsAbrCmd = &cobra.Command{
 func init() {
 	getVariantsAbrCmd.Flags().StringVarP(&extractVariantsHlsUrlFlag, "url", "u", "", "URL of the HLS stream to test. For example: https://yoursite.com/hls/streaming.m3u8")
 
-	err := hlsCmd.MarkFlagRequired("url")
+	err := getVariantsAbrCmd.MarkFlagRequired("url")
 	if err != nil {
 		return
 	}

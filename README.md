@@ -1,14 +1,10 @@
-# AFVT - A command-line tool written in Go for testing RTMP and HLS streaming
+# AFVT - A command-line tool written in Go for testing RTMP and HLS streaming. You can also analyze and download HLS content.
 
 ## Features
 
-AFVT is a tool that uses a combination of networking techniques and VLC to check if a streaming source is functioning correctly. Here’s how it works:
-
-    Server Check: It uses HTTP requests and a net.Dialer to verify if the streaming servers (RTMP or HLS) are reachable and operational.
-
-    Stream Check: Once the server is confirmed to be up, it launches VLC to test if the streaming feed is actually working and playable. VLC is used to attempt to play the stream and verify its integrity and availability.
-
+AFVT is a tool that uses a combination of networking techniques and VLC to check if a streaming source is functioning correctly. Also you can download videos with ffmpeg.
 You can check an RTMP or HLS streaming source individually, or take advantage of Go's goroutines to open and test multiple streams concurrently using VLC by invoking the full-test command.
+To download videos you need ffmpeg on your system.
 
 ## Usage
 
@@ -48,7 +44,7 @@ afvt hls --url https://example.com/stream.m3u8 --duration 20
 This command tests a single RTMP stream for 100s.
 
 ```bash 
-afvt afvt long-rtmp --url rtmp://example.com:1935/streaming
+afvt long-rtmp --url rtmp://example.com:1935/streaming
 ```
     --url: URL of the RTMP stream to test.
     --vlc: Path to the VLC executable. For example: /Applications/VLC.app/Contents/MacOS/VLC is the default value, you can omit it if you are on MacOS.
@@ -58,12 +54,41 @@ afvt afvt long-rtmp --url rtmp://example.com:1935/streaming
 This command tests both RTMP and HLS stream. It takes advantage of Go's goroutines to open and test multiple streams concurrently.
 
 ```bash 
-afvt afvt full-test --rtmpurl rtmp://localhost:1935/streaming --hlsurl http://localhost:8080/hls/streaming.m3u8
+afvt full-test --rtmpurl rtmp://localhost:1935/streaming --hlsurl http://localhost:8080/hls/streaming.m3u8
 ```
     --rtmpurl: URL of the RTMP stream to test.
     --hlsurl: URL of the HLS stream to test.
     --duration: Duration of the HLS test in seconds. Default is 20 seconds.
     --vlc: Path to the VLC executable. For example: /Applications/VLC.app/Contents/MacOS/VLC is the default value, you can omit it if you are on MacOS.
+
+### Get Variants
+
+This command extract ABR variants from HLS master playlist. Analyzes the provided HLS master playlist URL and lists all available quality variants with their respective bandwidth and resolution details. Each variant includes information about resolution, bandwidth, and codec parameters if available.
+```bash 
+afvt get-variants-hls --url https://example.com/stream.m3u8
+```
+
+## Download a video from an HLS URL
+
+**Requires ffmpeg**
+Download HLS content using ffmpeg. Insert your url and the output file path and choose to open it at the end of the download or not.
+```bash 
+afvt dw-hls --url http://example.com/playlist.m3u8 --output output.mp4 --open
+```
+    --url: URL of the file
+    --output: Path to save the downloaded file
+    --open: If you want to open the video after the download
+
+## Download multiple videos from a HLS URLs
+
+**Requires ffmpeg**
+Download multiple HLS content using ffmpeg in parallel. Insert your urls and output file paths.
+```bash 
+afvt dw-multiple-hls --url "url1,url2,url3" --output "out1.mp4,out2.mp4,out3.mp4" --open
+```
+    --url: URLs of the file
+    --output: Paths to save the downloaded file
+    --open: If you want to open the videos after the download
 
 ## License
 

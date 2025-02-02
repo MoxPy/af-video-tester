@@ -10,7 +10,7 @@ var rootCmd = &cobra.Command{
 	Use:   "afvt",
 	Short: "AF Video Tester",
 	Long: `A simple command-line tool for testing RTMP and HLS streaming. AFV utilizes VLC and HTTP requests to handle and 
-analyze the streaming status.`,
+analyze the streaming status. Also, you can download videos through ffmpeg.`,
 }
 
 func Execute() {
@@ -25,5 +25,8 @@ func init() {
 	rootCmd.AddCommand(rtmpCmd)
 	rootCmd.AddCommand(longRtmpCmd)
 	rootCmd.AddCommand(fullTestCmd)
+	rootCmd.AddCommand(getVariantsAbrCmd)
+	rootCmd.AddCommand(downloadHlsCmd)
+	rootCmd.AddCommand(downloadMultipleHlsCmd)
 	rootCmd.PersistentFlags().StringP("author", "a", "Manuel Lanzani", "Author name for copyright attribution")
 }

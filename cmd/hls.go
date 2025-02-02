@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
@@ -96,7 +97,7 @@ func CheckStatus(url string) bool {
 
 	playlistContent := string(body)
 
-	if strings.Contains(playlistContent, ".ts") || strings.Contains(playlistContent, ".m3u8") {
+	if strings.Contains(playlistContent, ".ts") || strings.Contains(playlistContent, ".m3u8") || strings.Contains(playlistContent, ".m4s") {
 		log.Printf("HLS Streaming Status: up")
 		return true
 	}
@@ -118,7 +119,7 @@ func CheckWithVLC(url string, d int, VLCPath string) bool {
 		return false
 	}
 	defer stdout.Close()
-	stderr, err := cmd.StderrPipe() // VLC uses stderr
+	stderr, err := cmd.StderrPipe() // VLC usa stderr
 	if err != nil {
 		log.Printf("Error creating stderr pipe: %v\n", err)
 		return false
@@ -133,45 +134,43 @@ func CheckWithVLC(url string, d int, VLCPath string) bool {
 	outScanner := bufio.NewScanner(stdout)
 	errScanner := bufio.NewScanner(stderr)
 
-	done := make(chan bool, 1)
+	done := make(chan bool)
 
 	go func() {
 		for outScanner.Scan() {
-			line := outScanner.Text()
-			log.Println("VLC Output (stdout):", line)
+			log.Println("VLC Output (stdout):", outScanner.Text())
 		}
-		done <- true
 	}()
+
 	go func() {
 		for errScanner.Scan() {
 			line := errScanner.Text()
-			log.Println("VLC Output (stderr): ", line)
+			log.Println("VLC Output (stderr):", line)
+
 			if strings.Contains(line, "Changing stream format Unknown -> TS") || strings.Contains(line, "Changing stream format Unknown -> MP4") {
-				go func() {
-					select {
-					case <-time.After(duration + 5*time.Second):
-						log.Println("Test successful, VLC received the signal.")
-						done <- true
-					}
-				}()
+				log.Println("Stream format recognized, waiting for confirmation...")
+				time.AfterFunc(duration+5*time.Second, func() {
+					log.Println("Test successful, VLC received the signal.")
+					done <- true
+				})
+				return
 			}
 		}
 	}()
 
 	select {
 	case <-done:
-		if err = cmd.Process.Kill(); err != nil {
-			log.Printf("Error terminating VLC process: %v\n", err)
-			return false
-		}
-		return true
+		log.Println("Stream detected, terminating VLC...")
 	case <-time.After(timeout):
+		log.Println("Timeout reached. VLC process has been terminated.")
+	}
+
+	if err = cmd.Process.Signal(os.Interrupt); err != nil {
+		log.Printf("Error sending interrupt signal to VLC: %v\n", err)
 		if err = cmd.Process.Kill(); err != nil {
 			log.Printf("Error terminating VLC process: %v\n", err)
-			return false
-		} else {
-			log.Println("Timeout reached. VLC process has been terminated.")
 			return false
 		}
 	}
+	return true
 }
